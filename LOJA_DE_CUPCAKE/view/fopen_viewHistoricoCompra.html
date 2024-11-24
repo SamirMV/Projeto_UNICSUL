@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+		body
+		{
+		  background-color: DarkGray;
+		  height: 100%;
+		  overflow: auto;
+		}
+
+		
+		#menuFixo
+		{	position: fixed;
+			top:0px;
+			width: 98.5%;
+			border: 2px outset gray;
+			background-color: Gray;
+			margin-right: 10px;
+			font-weight: bold;
+			font-size: 25px;
+			z-index: 1;
+			opacity: 1;
+		}
+		
+		#menuConsulta
+		{	
+			position: relative;
+			top:20px;
+			border: 2px outset gray;
+			overflow: auto;
+			
+		}
+
+		#divConsulta
+		{	
+			float:left;
+			width: 120px;
+			margin-left: 10px;
+			margin-right: 30px;
+			overflow: auto;
+		}
+		#itensConsulta
+		{	
+			float:left;
+			width: 130px;
+			margin-left: 10px;
+			margin-right: 30px;
+			overflow: auto;
+		}
+
+		#main
+		{	
+		
+			
+		}
+		
+		</style>
+	</head>
+
+	<body>
+
+		 <div id = "main">
+		 {{conteudo}}
+		 </div>
+
+		
+		<script>
+		function pegaItens(numeroCrompra)
+		{
+
+			var xhttp = new XMLHttpRequest();
+
+			xhttp.onreadystatechange = function()
+			{
+
+				if (this.readyState == 4 && this.status == 200)
+				{
+
+					let pegaTag1 = this.responseText;		//igual ao da pagina index.php
+
+					if (pegaTag1 != "")
+					{
+						//o botao "ver itens" passa o numero para consutal no BD e tambem eh o id da tag que recebe o conteudo
+						document.getElementById(numeroCrompra).innerHTML = this.responseText;
+						
+					}
+					else
+					{
+						//document.getElementById("pagina").innerHTML = 'nao!!! '+pegaTag1;
+						alert("Faça Login!!!");
+					}
+
+				}
+
+			};
+			xhttp.open("GET", "controller.php?numeroCrompra="+numeroCrompra+"&metodo=pegaItensHistorico", true);//cria um novo numero de compra na secao
+			xhttp.send();
+		}
+		</script>
+	</body>
+</html>
+     

@@ -1,0 +1,374 @@
+	
+
+<!DOCTYPE html>
+<html>
+
+	<head>
+	
+		<style>
+
+		body 
+		{
+			background-color: DarkGray;
+			overflow: auto;
+		}
+
+		span
+		{
+			margin: 4px;
+
+		}
+		button
+		{
+			border-radius: 25px;
+		}
+		
+		.idDiv
+		{
+			float:left;
+			width: 110px;
+			border: 5px outset red;
+			background-color: lightblue;    
+			text-align: center;
+			margin: 10px;
+			padding: 5px;
+			border-radius: 25px;
+		}
+
+		#Compra
+		{	
+			position: fixed;
+			top: 5px;
+			right: 0px;
+			width: 310px;
+			height: 204px;
+			overflow: auto;
+			border: 3px solid #73AD21;
+			margin: 0px;
+			text-align: right;
+		}
+		
+		#carrinho
+		{
+			position: relative;
+			top: 5px;
+			left: 5px;
+			width: 295px;
+			height: 120px;
+			overflow: auto;
+			border: 3px solid #73AD21;
+			text-align: right;
+		}
+		
+		.idConteudo
+		{	
+			margin-right: 310px;
+			height: 400px;
+			border:0px solid red;
+			overflow: auto;
+		}
+
+		
+
+		.cImg
+		{
+			width: 100px;
+			height: 100px;
+		 }
+
+		</style>
+		
+
+		<script>
+		//passar o name por parametro do botao clicado
+		//let contador = 1;
+		//recebe a propriedade Name das tags e repassa abaixo
+		function enviarCarrinho(prodName)
+		{
+			
+			const tag0 = document.getElementsByName(prodName)[0].cloneNode(true);	//clona uma tag pelo nome e posicao da subtag
+			document.getElementById("carrinho").appendChild(tag0);			//insere a tag dentro de outra mantendo a existente
+			//document.getElementsByName("1")[2].id = "x"+contador;
+
+			document.getElementById("carrinho").innerHTML += '<span name='+prodName+'>R$</span>';
+
+			const tag1 = document.getElementsByName(prodName)[1].cloneNode(true); //esse eh o preco
+			document.getElementById("carrinho").appendChild(tag1);
+			//document.getElementsByName("1")[3].id = "x"+contador;
+			
+			//constroi uma tag por texto tipo o php faz
+			const btnRemover = "<button name='"+prodName+"' onclick=\"removeProduto("+prodName+")\">remover</button><br name='"+prodName+"'>";
+			document.getElementById("carrinho").innerHTML += btnRemover;
+			//contador++;
+			somar();
+
+		}
+
+		//recebe o nome do elemento que sera apagado - obs quando um é apagado o outro assume a posicao dele
+		function removeProduto(prodName)
+		{
+			document.getElementsByName(prodName)[2].remove();//TAG SPAN [0] nome do produto
+			document.getElementsByName(prodName)[2].remove();//TAG SPAN R$
+			document.getElementsByName(prodName)[2].remove();//TAG SPAN [1] preco do produto
+			document.getElementsByName(prodName)[2].remove();//TAG BUTTON
+			document.getElementsByName(prodName)[2].remove();//TAG BR
+			somar();
+		}
+
+		</script>
+		
+	</head>
+
+	<body>
+		
+		
+				
+		<div id="id" class="idConteudo">
+		<h3>{{id_conteudo}}</h3>
+		</div>
+
+
+		<div id="Compra">
+			Carrinho
+			<span>R$</span><span id="total">0</span>
+			<div id="carrinho"></div>
+			<span><select name="cars" id="cars">
+				<option value="vazio">Forma de pagamento:</option>
+				<option value="pix">Pix</option>
+				<option value="entregaPaga">Pagar na entrega</option>
+				</select>
+			</span>
+			<button style="margin:10px;" onclick="pegaUltimaCompra()">Finalizar</button>
+										
+		</div>
+		
+		<script>
+		
+			function testarSessao2()
+			{
+
+				let xhttp = new XMLHttpRequest();
+
+				xhttp.onreadystatechange = function()
+				{
+
+					if (this.readyState == 4 && this.status == 200)
+					{
+
+						let pegaTag1 = this.responseText;		//igual ao da pagina index.php
+
+						if (pegaTag1 != "")
+						{
+							//document.getElementById("pagina").innerHTML = 'OK!!! '+pegaTag1;
+							gravarItensComprados();
+						}
+						else
+						{
+							//document.getElementById("pagina").innerHTML = 'nao!!! '+pegaTag1;
+							alert("Faça Login!!!");
+						}
+
+					}
+
+				};
+				xhttp.open("GET", "controller.php?metodo=testSessao", true);
+				xhttp.send();
+			}
+			
+		</script>
+
+		<script>
+		
+			function pegaUltimaCompra()
+			{
+				//let gravarC = document.getElementById("cars").value;
+				let xhttp = new XMLHttpRequest();
+				
+				xhttp.onreadystatechange = function()
+				{
+
+					if (this.readyState == 4 && this.status == 200)
+					{
+
+						let pegaTag1 = this.responseText;		//igual ao da pagina index.php
+											
+						if (pegaTag1 != "")
+						{
+							//document.getElementById("pagina").innerHTML = 'ultima!!! '+pegaTag1;
+							
+							let qtd_car = document.getElementsByClassName("prod").length;
+		
+							if ((qtd_ini-qtd_car) != 0)//evita executar sem produto no carrinho
+							{
+							
+								let formaDePag = document.getElementById("cars").value;
+				
+								if (formaDePag == "vazio")
+								{
+									alert("escolha de pagamento");
+								
+								}
+								else
+								{	//gravar();
+									gravarItensComprados();//grava no banco cada item + o novo numero de compra
+								}
+							}
+							else
+							{
+								//alert(pegaTag1);
+								alert("Carrinho Vazio!!!");
+							}
+						}
+						else
+						{
+							//document.getElementById("pagina").innerHTML = 'nao!!! '+pegaTag1;
+							//alert(pegaTag1);
+							alert("Faça Login!!!");
+						}
+
+					}
+
+				};
+				
+				xhttp.open("GET", "controller.php?metodo=ultimaCompra", true);//cria um novo numero de compra na secao
+				xhttp.send();
+				
+			}
+			
+		</script>
+
+		<!-- ESSE SCRIPT DEVE SER CARRGADO POR ULTIMO -->
+		<script>
+		
+			// ESSE SCRIPT DEVE SER CARREGADO POR ULTIMO		
+			
+			let qtd_ini = document.getElementsByClassName("prod").length;   //guardo um numero de produtos quando a pagina carrega
+
+			let prod = document.getElementsByClassName("prod");		//guarda o elemento para pegar o innerHTML
+
+			let preco = document.getElementsByClassName("preco");
+
+			let enviaProd  = "";
+			let enviaPreco = "";
+
+			//esta funcao grava uma item do carrinho por vez - o ideal seriar construir um array e enviar
+			function gravarItensComprados() 
+			{
+				
+				let qtd_car = document.getElementsByClassName("prod").length;
+				
+				
+					for (let i = qtd_ini; i < qtd_car; i++)//comecao a contagem do carrinho apos o numero de itens carregados na pagina 
+					{
+						
+						let enviaProd  = prod[i].innerHTML;//a cada repeticao - recebe um dados diferente e e
+						let enviaPreco = preco[i].innerHTML;
+
+						//document.getElementById("demo"+i).innerHTML += enviaProd;//simula paginas
+						//document.getElementById("demo"+i).innerHTML += enviaPreco;
+
+						let nome =  enviaProd; //poderia produto ById mas o PHP nao aceita ID
+						let valor =  enviaPreco;
+						
+						
+						let xhttp = new XMLHttpRequest();
+						  
+						xhttp.onreadystatechange = function()
+						{
+							
+							if (this.readyState == 4 && this.status == 200) 
+							{
+								//document.getElementById("pagina").innerHTML = this.responseText;//+= mantem o valor anterior
+								//SEM MENSAGEM DE RETORNO APENAS GRAVA
+								//x = this.responseText;
+							}
+						};
+
+						xhttp.open("GET", "controller.php?produto="+nome+"&preco="+valor+"&metodo=gravarCompra", true);
+						xhttp.send();
+						
+					}
+					
+					setTimeout(gravarResumoCompraPix, 300);
+			}
+		
+		</script>
+		
+		<script>
+		
+			let paginaMetodo = "";
+			function gravarResumoCompraPix()
+			{	
+			
+				//let A = "gravaHistoricoCompraDb";
+				//let gravarC = "controller.php?metodo=gravaHistoricoCompraDb";
+				let formaDePag = document.getElementById("cars").value;
+
+				if(formaDePag == "pix")
+				{
+					//alert(ident + " foi no pix");
+					//gravarResumoCompraPix();
+					paginaMetodo = "controller.php?metodo=gravaHistoricoCompraPix"
+				}
+				
+				if(formaDePag == "entregaPaga")
+				{
+					//alert(ident + " pago na entrega");
+					paginaMetodo = "controller.php?metodo=gravaHistoricoCompraDinheiro"
+				}	
+				
+					let xhttp = new XMLHttpRequest();
+
+					xhttp.onreadystatechange = function()
+					{	
+					
+						if (this.readyState == 4 && this.status == 200)
+						{
+
+							let pegaTag1 = this.responseText;		//igual ao da pagina index.php
+
+							if (pegaTag1 != "")
+							{
+								//document.getElementById("pagina").innerHTML = 'ultima!!! '+pegaTag1;
+								document.getElementsByTagName("body")[0].innerHTML  = this.responseText;
+							}
+							else
+							{
+								//document.getElementById("pagina").innerHTML = 'nao!!! '+pegaTag1;
+								alert("Faça Lojim!!!");
+							}
+
+						}
+
+					};
+				
+					//pega o nome do usuario - o ultmimo numero de compra - e soma deles
+					xhttp.open("GET", paginaMetodo, true);
+					xhttp.send();
+					
+			}
+		
+		</script>
+
+		<script>
+			    
+			function somar()
+			{
+				let qtd_car = document.getElementsByClassName("prod").length;
+
+				let total = 0; //Burro - a funcao trata vazio "" como string
+
+				for (let i = qtd_ini; i < qtd_car; i++)
+				{
+
+					total += Number(preco[i].innerHTML);//Mantem o conteudo e acrecenta
+				  
+				}
+
+				document.getElementById("total").innerHTML = total;
+				
+			}
+			
+		</script>
+	</body>
+</html>
